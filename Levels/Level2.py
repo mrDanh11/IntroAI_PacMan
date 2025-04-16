@@ -9,12 +9,17 @@ import math
 import pygame
 
 # testcases: (ghost, pacman)
-testcases = [((16, 13), (24, 14)),
-             ((21, 3), (15, 21)), 
-             ((27, 3), (29, 27)),
-             ((6, 2), (24, 26)), 
-             ((30, 27), (4, 2))]
-testcaseID = 0
+testcases = [
+    ((16, 13), (24, 14)),  # Giữ nguyên test case đầu tiên (đang dùng mặc định)
+    ((5, 5),    (25, 25)),  # Ghost ở góc trên trái, Pacman ở góc dưới phải
+    ((29, 27),  (27, 3)),    # Ghost bên phải bản đồ, Pacman bên trái trên
+    ((15, 15),  (18, 10)),  # Cả 2 ở giữa bản đồ
+    ((30, 26),   (3, 2))    # Ghost dưới cùng trái, Pacman trên cùng phải
+]
+
+
+# khai báo testcase mặc định khi vào trò chơi
+testcaseID = 0  
 
 quit = False
 start = False
