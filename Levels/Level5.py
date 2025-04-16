@@ -30,16 +30,16 @@ class Level5:
         EntityBeingSetIndex = 0
 
         # Setup tọa độ ma trận
-        Object.blueGhostX = -1#6
-        Object.blueGhostY = -1#2
-        Object.pinkGhostX = -1#30
-        Object.pinkGhostY = -1#27
-        Object.orangeGhostX = -1#21#27
-        Object.orangeGhostY = -1#4#3
-        Object.redGhostX = -1#21
-        Object.redGhostY = -1#3
-        Object.pacmanX = -1#15
-        Object.pacmanY = -1#21
+        Object.blueGhostX = -1 #6
+        Object.blueGhostY = -1 #2
+        Object.pinkGhostX = -1 #30
+        Object.pinkGhostY = -1 #27
+        Object.orangeGhostX = -1 #21#27
+        Object.orangeGhostY = -1 #4#3
+        Object.redGhostX = -1 #21
+        Object.redGhostY = -1 #3
+        Object.pacmanX = -1 #15
+        Object.pacmanY = -1 #21
 
         #Setup tọa độ thực
         (Object.realPacmanX, Object.realPacmanY) = Entity.getRealCoordinates((Object.pacmanX, Object.pacmanY), Object.PACMAN_SIZE)
@@ -233,68 +233,71 @@ class Level5:
                     break
 
             self.finish()
-                
+
     def finish(self):
-        global quit, ClickOnButton
+        global quit, ClickOnButton, prevHoverOn, curHoverOn
 
         clock = pygame.time.Clock()
-        last_tick = pygame.time.get_ticks()
+        ClickOnButton = None
+        prevHoverOn = None
+        curHoverOn = None
 
+        # Dừng âm thanh hiện tại, phát âm thanh chiến thắng
         Sounds.ghost_move_sound.stop()
         Sounds.dramatic_theme_music_sound.stop()
-
         Sounds.win_sound.set_volume(0.5)
         Sounds.win_sound.play()
-        
+
+        # Font chữ và màu sắc
+        font_title = pygame.font.Font(None, 70)
+        font_button = pygame.font.Font(None, 40)
+        font_shortkey = pygame.font.Font(None, 30)
+
+        color_text = (0, 0, 0)
+        color_button = (255, 255, 255)
+        color_hover = (144, 238, 144)
+
+        # Tạo dòng chữ thông báo
+        title_text = font_title.render("PACMAN WAS CAUGHT!", True, color_hover)
+        title_rect = title_text.get_rect(center=(400, 800 * 1 // 4))
+
         # Hướng dẫn phím tắt
-        font = pygame.font.Font(None, 30)
-        shortkey = font.render("ESC: Menu  Q: Quit", True, (255, 255, 255))
+        shortkey_text = font_shortkey.render("ESC: Menu  Q: Quit", True, (255, 255, 255))
 
-        # Font và màu sắc
-        font_big = pygame.font.Font(None, 150)  # Font lớn cho "YOU LOST"
-        font_small = pygame.font.Font(None, 80)  # Font cho "SCORE"
-        font_button = pygame.font.Font(None, 40)  # Font cho các nút
-        color_text = (0, 0, 0)  # Màu chữ đen
-        color_button = (255, 255, 255)  # Màu nền nút trắng
-        color_hover = (144, 238, 144)  # Màu hover xanh nhạt
-
-        # Chữ YOU LOST
-        font_big = pygame.font.Font(None, 70)  # Chọn font, 150px là kích thước chữ
-        finish_text = font_big.render("PACMAN WAS CAUGHT!", True, (144, 238, 144))  # Chữ đỏ
-        finish_text_rect = finish_text.get_rect(center=(400, 800 * 1 // 4))  # Căn giữa, y = 2/3 chiều cao màn hình
-        
-        # Tạo nút (text, x, y, width, height)
+        # Danh sách các nút
         buttons = [
-            ("Again", 400, finish_text_rect.bottom + 50 + 50, 200, 70),
-            ("Menu", 400, finish_text_rect.bottom + 150 + 50, 200, 70),
-            ("Quit", 400, finish_text_rect.bottom + 250 + 50, 200, 70),
+            ("Again", 400, title_rect.bottom + 100, 200, 70),
+            ("Menu", 400, title_rect.bottom + 200, 200, 70),
+            ("Quit", 400, title_rect.bottom + 300, 200, 70),
         ]
 
-        ClickOnButton = None
-
+        # Vòng lặp giao diện kết thúc
         while Config.running and not quit:
             Config.screen.fill('black')
-
             mouse_x, mouse_y = pygame.mouse.get_pos()
 
+            # Xử lý sự kiện
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     Config.running = False
                     return
+
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         Sounds.click_sound.play()
                         quit = True
                         return
-                    if event.key == pygame.K_q:
+                    elif event.key == pygame.K_q:
                         Sounds.click_sound.play()
                         Config.running = False
                         return
+
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     for text, x, y, w, h in buttons:
                         if x - w // 2 <= mouse_x <= x + w // 2 and y - h // 2 <= mouse_y <= y + h // 2:
-                            ClickOnButton = text 
+                            ClickOnButton = text
 
+            # Vẽ các entity để tạo hiệu ứng mờ nền
             EM().maze.draw()
             EM().pacman.setupdrawdir()
             EM().blueGhost.draw()
@@ -302,36 +305,38 @@ class Level5:
             EM().orangeGhost.draw()
             EM().redGhost.draw()
 
+            # Tạo lớp phủ mờ nền
             overlay = pygame.Surface((Config.width, Config.height))
-            overlay.set_alpha(180)  # Độ trong suốt (0: trong suốt hoàn toàn, 255: không trong suốt)
-            overlay.fill((0, 0, 0))  # Màu đen
+            overlay.set_alpha(180)
+            overlay.fill((0, 0, 0))
             Config.screen.blit(overlay, (0, 0))
 
-            # Vẽ chữ
-            Config.screen.blit(finish_text, finish_text_rect)
+            # Vẽ dòng chữ chính
+            Config.screen.blit(title_text, title_rect)
 
-            # Vẽ nút
-            global prevHoverOn, curHoverOn
+            # Vẽ các nút
             curHoverOn = None
-
             for text, x, y, w, h in buttons:
                 is_hovered = x - w // 2 <= mouse_x <= x + w // 2 and y - h // 2 <= mouse_y <= y + h // 2
-                color = color_button
-                
+                color = color_hover if is_hovered else color_button
                 if is_hovered:
-                    color = color_hover
                     curHoverOn = text
 
-                pygame.draw.rect(Config.screen, color, (x - w // 2, y - h // 2, w, h), border_radius=15)  # Nút bo góc
+                pygame.draw.rect(Config.screen, color, (x - w // 2, y - h // 2, w, h), border_radius=15)
                 text_render = font_button.render(text, True, color_text)
                 text_rect = text_render.get_rect(center=(x, y))
-                Config.screen.blit(text_render, text_rect)  # Hiển thị chữ trên nút
-            
+                Config.screen.blit(text_render, text_rect)
+
+            # Phát âm thanh hover khi di chuột qua nút khác
             if curHoverOn != prevHoverOn:
                 prevHoverOn = curHoverOn
                 if curHoverOn:
                     Sounds.hover_sound.play()
 
+            # Hiển thị hướng dẫn phím tắt
+            Config.screen.blit(shortkey_text, (580, 800 - 30))
+
+            # Xử lý nút bấm
             if ClickOnButton == "Again":
                 Sounds.click_sound.play()
                 return
@@ -343,8 +348,6 @@ class Level5:
                 Sounds.click_sound.play()
                 Config.running = False
                 return
-            
-            Config.screen.blit(shortkey, (580, 800 - 30))
 
             pygame.display.flip()
             clock.tick(Config.fps)
