@@ -4,7 +4,7 @@ from collections import deque
 from Entities.Entity import Entity
 from Levels.ExperimentBox import ExperimentBox
 import time
-import tracemalloc #de lay bo nho
+import tracemalloc # thư viện làm việc với bộ nhớ
 import math
 import pygame
 
@@ -22,7 +22,8 @@ start = False
 class Level2:
     def __init__(self):
         pass
-
+    
+    # thiết lập lại bản đồ mỗi khi reset level
     def setup(self):
         Board.maze = [row[:] for row in Board.initMaze]
 
@@ -51,6 +52,7 @@ class Level2:
         volume = max(0.0, 1 - (distance / max_distance))  # 0.1 là âm lượng nhỏ nhất, 1 là lớn nhất
         return min(1.0, max(0.0, volume))  # Giới hạn từ 0.0 đến 1.0
     
+    # hàm thực thi level 2
     def execute(self):
         global quit, start
 
