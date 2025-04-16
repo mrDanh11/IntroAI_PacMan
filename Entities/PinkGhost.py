@@ -43,26 +43,29 @@ class PinkGhost(GhostInterface):
         Object.realPinkGhostX = realX
         Object.realPinkGhostY = realY
 
-    # Anh em chỉ cần viết thuật toán vào hàm này, các hàm còn lại Âu đã viết 
+    # IDF
     def getTargetPos(self, ghost, pacman):
-        #Neu ban dau da o pacman
+        # TH đã ở vị trí pacman
         if (ghost) == pacman:
             return None 
             
         ids_direction = [(1, 0), (-1, 0), (0, -1), (0, 1)] # Xuống, Lên, Trái, Phải
         max_depth_limit = 50
         depth_limit = 1
+        # main loop
         while depth_limit <= max_depth_limit:
             stack = deque([(ghost)])
-            visited = set([ghost])
-            depths = {ghost: 0}  
-            parent = {ghost : None}
+            visited = set([ghost])      # tránh lặp lại vị trí
+            depths = {ghost: 0}         # theo dõi độ sâu
+            parent = {ghost : None}     # truy vết đường đi khi thấy pacman
 
             while stack:
                 (ghost_x, ghost_y) = stack.pop()
-                depth = depths[(ghost_x, ghost_y)]
+                depth = depths[(ghost_x, ghost_y)]  # lấy độ sâu
 
-                #Neu gap pacman
+                # nếu gặp pacman -> truy vết đường đi
+                # duyệt ngược từ Pacman về vị trí ghost để lấy đường đi
+                # đảo ngược danh sách → đường đi từ ghost đến Pacman
                 if (ghost_x, ghost_y) == pacman:
                     path = [] #list path
                     while (ghost_x, ghost_y) != ghost:
@@ -71,16 +74,19 @@ class PinkGhost(GhostInterface):
                     path = path[::-1]
                     return path[0] 
                 
+                # nếu chưa đủ độ sâu
                 if depth < depth_limit:
                     for x, y in ids_direction:
                         go_x = ghost_x + x
                         go_y = ghost_y + y
 
+                        # check ô không vượt quá bản đồ
                         if 0 <= go_x < Board.ROWS and 0 <= go_y < Board.COLS and ((go_x, go_y) not in visited or depth + 1 < depths[(go_x, go_y)]):
+                            # check va chạm với shost khác
                             if (0 <= Board.maze[go_x][go_y] <= 2 or Board.maze[go_x][go_y] == 9)\
                                 and (go_x, go_y) != (Object.blueGhostX, Object.blueGhostY) \
                                 and (go_x, go_y) != (Object.orangeGhostX, Object.orangeGhostY) \
-                                and (go_x, go_y) != (Object.redGhostX, Object.redGhostY):  #check collision::
+                                and (go_x, go_y) != (Object.redGhostX, Object.redGhostY):  
                                     stack.append((go_x, go_y))
                                     visited.add((go_x, go_y))
                                     depths[(go_x, go_y)] = depth + 1
@@ -88,6 +94,7 @@ class PinkGhost(GhostInterface):
 
                                    
                 else: visited.discard((ghost_x, ghost_y))
+                # nếu chưa tìm thấy thì tăng giới hạn độ sâu
             depth_limit += 1
 
     def getTargetPathInformation(self, ghost, pacman):
