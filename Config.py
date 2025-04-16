@@ -90,9 +90,6 @@ class Material:
   HeartImage = pygame.transform.scale(pygame.image.load("Assets/player_images/heart.png"), (Object.HEART_SIZE, Object.HEART_SIZE))
   
 class Board:
-# 0 = empty black rectangle, 1 = dot, 2 = big dot, 3 = vertical line,
-# 4 = horizontal line, 5 = top right, 6 = top left, 7 = bot left, 8 = bot right
-# 9 = gate
   PACMAN = 50
   BLUE_GHOST = 60
   PINK_GHOST = 61
@@ -166,9 +163,12 @@ def setup():
   Object.realOrangeGhostY = Object.orangeGhostY * Config.p_width + Config.p_width * 0.5 - Object.ORANGE_GHOST_SIZE * 0.5
 
 class Sounds:
-  dramatic_theme_music_sound = pygame.mixer.Sound("Assets/sounds/dramatic_theme_music.mp3")  # Âm thanh nhạc nền trong game
-  pacman_eat_dot_sound = pygame.mixer.Sound("Assets/sounds/pacman_eating_dots.mp3")  # Âm thanh khi ăn
-  ghost_move_sound = pygame.mixer.Sound("Assets/sounds/ghost_move.mp3")  # Âm thanh ma di chuyển
+  # Âm thanh nhạc nền trong game
+  dramatic_theme_music_sound = pygame.mixer.Sound("Assets/sounds/dramatic_theme_music.mp3")  
+  # Âm thanh khi ăn
+  pacman_eat_dot_sound = pygame.mixer.Sound("Assets/sounds/pacman_eating_dots.mp3")  
+  # Âm thanh ma di chuyển
+  ghost_move_sound = pygame.mixer.Sound("Assets/sounds/ghost_move.mp3")  
   pacman_death_sound = pygame.mixer.Sound("Assets/sounds/pacman_death.wav")
   beginning_game_sound = pygame.mixer.Sound("Assets/sounds/pacman_beginning.wav")
   ghost_move_powerup_sound = pygame.mixer.Sound("Assets/sounds/ghost_move_powerup.mp3")

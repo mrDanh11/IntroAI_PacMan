@@ -13,15 +13,6 @@ LIGHT_RED = (255, 50, 50)
 BLACK = (0, 0, 0)
 LIGHT_GREEN = (144, 238, 144)
 
-# WHITE = (0, 0, 0)
-# GRAY = (68, 68, 68)              # Màu tab không được chọn
-# LIGHT_GRAY = (187, 187, 187)     # Màu tab được chọn
-# RED = (170, 0, 0)                # Màu nút Exit
-# LIGHT_RED = (255, 68, 68)        # Hover Exit
-# BLACK = (144, 238, 144)
-# LIGHT_GREEN = (102, 255, 204)    # Hover level - xanh mint tươi
-
-
 prevHoverOn = None
 curHoverOn = None
 
