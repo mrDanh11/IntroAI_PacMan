@@ -43,7 +43,7 @@ class PinkGhost(GhostInterface):
         Object.realPinkGhostX = realX
         Object.realPinkGhostY = realY
 
-    # IDF
+    # IDS
     def getTargetPos(self, ghost, pacman):
         # TH đã ở vị trí pacman
         if (ghost) == pacman:
