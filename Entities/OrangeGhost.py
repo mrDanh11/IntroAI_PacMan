@@ -49,16 +49,12 @@ class OrangeGhost(GhostInterface):
             if (Board.maze[x][y] < 3 or Board.maze[x][y] == 9) and Board.coordinates[x][y] in (Board.BLANK, Board.PACMAN):
                 return True
         return False
-    
-    # Anh em chỉ cần viết thuật toán vào hàm này, các hàm còn lại Âu đã viết 
-   
+
     def getTargetPos(self, ghost, pacman): # UCS*
-        (posX, posY) = ghost
-        f = 0
-        heap = [(f, posX, posY, [])] 
+        (startX, startY) = ghost
+        heap = [(0, startX, startY, [])] 
         heapq.heapify(heap)
         visited = set([])
-        
         DIRECTIONS = [(1, 0), (-1, 0), (0, 1), (0, -1)] # lên, xuống, phải, trái
         PATH_LIMIT = 25
 
@@ -69,20 +65,17 @@ class OrangeGhost(GhostInterface):
             if Board.coordinates[int(x)][int(y)] == Board.PACMAN or len(path) == PATH_LIMIT:
                 return path[0]   
             
-            for dx, dy in DIRECTIONS:
-                
-                nx = x + dx
-                ny = y + dy
-                
-                while self.isValidPos(nx, ny) and (nx, ny) not in Board.nodes and (nx, ny) != (Object.pacmanX, Object.pacmanY):
-                    nx += dx
-                    ny += dy          
-                    
-                if (nx, ny) not in visited and self.isValidPos(nx, ny)\
-                    and (nx, ny) != (Object.pinkGhostX, Object.pinkGhostY) \
-                    and (nx, ny) != (Object.blueGhostX, Object.blueGhostY) \
-                    and (nx, ny) != (Object.redGhostX, Object.redGhostY): #check collision::
-                    heapq.heappush(heap, (f + abs(nx - x) + abs(ny - y), nx, ny, path + [(nx, ny)]))
+            for dx, dy in DIRECTIONS:                
+                nextX = x + dx
+                nextY = y + dy
+                #Kiem tra mot doan duong thang kha di
+                while self.isValidPos(nextX, nextY) and (nextX, nextY) != (Object.pacmanX, Object.pacmanY) and (nextX, nextY) not in Board.nodes:
+                    nextX += dx
+                    nextY += dy          
+                #Kiem tra diem den    
+                if self.isValidPos(nextX, nextY) and (nextX, nextY) not in visited \
+                    and (nextX, nextY) not in [(Object.pinkGhostX, Object.pinkGhostY), (Object.blueGhostX, Object.blueGhostY), (Object.redGhostX, Object.redGhostY)]: #check collision::
+                    heapq.heappush(heap, (f + abs(nextX - x) + abs(nextY - y), nextX, nextY, path + [(nextX, nextY)]))
                 
         return None
     
@@ -152,43 +145,37 @@ class OrangeGhost(GhostInterface):
             if (Board.maze[x][y] < 3 or Board.maze[x][y] == 9) and Board.coordinates[x][y] == Board.BLANK:
                 return True
         return False
-    
+
     def getTargetPosPowerUp(self, ghost, target): # UCS*
-        (posX, posY) = ghost
-        f = 0
-        heap = [(f, posX, posY, [])] 
+        (startX, startY) = ghost
+        heap = [(0, startX, startY, [])] 
         heapq.heapify(heap)
-        visited = set([(posX, posY)])
-        
+        visited = set([(startX, startY)])    
         DIRECTIONS = [(1, 0), (-1, 0), (0, 1), (0, -1)] # lên, xuống, phải, trái
         PATH_LIMIT = 100
 
         while heap:
             (f, x, y, path) = heapq.heappop(heap)
-            
+            #dieu kien dung
             if (x, y) == target or len(path) == PATH_LIMIT:
                 return path[0] if len(path) > 0 else None
 
             for dx, dy in DIRECTIONS:
-                nx = x + dx
-                ny = y + dy
+                nextX = x + dx
+                nextY = y + dy
                 
-                if not self.isValidPosPowerUp(nx, ny):
+                if not self.isValidPosPowerUp(nextX, nextY):
                     continue
-                while (nx, ny) not in Board.nodes and (nx, ny) != target:
-                    nx += dx
-                    ny += dy
-                    if not self.isValidPosPowerUp(nx, ny):
+                while (nextX, nextY) not in Board.nodes and (nextX, nextY) != target:
+                    nextX += dx
+                    nextY += dy
+                    if not self.isValidPosPowerUp(nextX, nextY):
                         break
 
-                if (nx, ny) not in visited and self.isValidPosPowerUp(nx, ny)\
-                    and (nx, ny) != (Object.pinkGhostX, Object.pinkGhostY) \
-                    and (nx, ny) != (Object.blueGhostX, Object.blueGhostY) \
-                    and (nx, ny) != (Object.redGhostX, Object.redGhostY) \
-                    and (nx, ny) != (Object.pacmanX, Object.pacmanY): #check collision:
-                    nf = f + abs(nx - x) + abs(ny - y)
-                    heapq.heappush(heap, (nf, nx, ny, path + [(nx, ny)]))
-                    visited.add((nx, ny))
+                if (nextX, nextY) not in visited and self.isValidPosPowerUp(nextX, nextY)\
+                    and (nextX, nextY) not in [(Object.pinkGhostX, Object.pinkGhostY), (Object.blueGhostX, Object.blueGhostY), (Object.redGhostX, Object.redGhostY), (Object.pacmanX, Object.pacmanY)]: #check collision
+                    heapq.heappush(heap, (f + abs(nextX - x) + abs(nextY - y), nextX, nextY, path + [(nextX, nextY)]))
+                    visited.add((nextX, nextY))
         
         return None
     
