@@ -12,7 +12,7 @@ testcases = [
     ((16, 13), (24, 14)),  # Giữ nguyên test case đầu tiên (đang dùng mặc định)
     ((4, 2),    (26, 25)),  # Ghost ở góc trên trái, Pacman ở góc dưới phải
     ((29, 27),  (27, 3)),    # Ghost bên phải bản đồ, Pacman bên trái trên
-    ((15, 15),  (18, 10)),  # Cả 2 ở giữa bản đồ
+    ((4, 13),  (24,13)),  # Cả 2 ở giữa bản đồ
     ((30, 26),   (3, 2))    # Ghost dưới cùng trái, Pacman trên cùng phải
 ]
 testcaseID = 0
