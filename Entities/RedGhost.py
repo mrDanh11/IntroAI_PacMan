@@ -24,41 +24,18 @@ class RedGhost(GhostInterface):
         
     def move(self):
         x, y = Object.redGhostX, Object.redGhostY
-        targetX, targetY = Entity.getRealCoordinates((x, y), Object.RED_GHOST_SIZE)  # Tọa độ mục tiêu
-        realX, realY = Object.realRedGhostX, Object.realRedGhostY  # Tọa độ thực tế
+
+        targetX, targetY = Entity.getRealCoordinates((x, y), Object.RED_GHOST_SIZE) # tọa độ thực muốn đi đến
+        realX, realY = Object.realRedGhostX, Object.realRedGhostY # tọa độ thực hiện tại
 
         dx, dy = (targetX - realX), (targetY - realY)
         sX = Config.p_height / 15
         sY = Config.p_width / 15
-
-        # Kiểm tra nếu ma đỏ quá gần các ma khác
-        other_ghosts = [
-            (Object.pinkGhostX, Object.pinkGhostY),
-            (Object.blueGhostX, Object.blueGhostY),
-            (Object.orangeGhostX, Object.orangeGhostY)
-        ]
-        
-        # Kiểm tra va chạm với các ma khác
-        avoid_collision = False
-        for gx, gy in other_ghosts:
-            dist = abs(realX - gx) + abs(realY - gy)
-            if dist <= 2:
-                avoid_collision = True
-                break
-
-        if avoid_collision:
-            # Nếu cần tránh, di chuyển theo hướng khác nhưng vẫn tiến về mục tiêu
-            dx, dy = self.avoid_ghost_collision(realX, realY, targetX, targetY)
-        else:
-            # Nếu không gặp ma khác, tiếp tục di chuyển về mục tiêu
-            dx, dy = (targetX - realX), (targetY - realY)
-        
-        # Cập nhật vị trí của ma đỏ
         if abs(dx) >= sX:
             realX = realX + dx / abs(dx) * sX
         else:
             realX = targetX
-
+        
         if abs(dy) >= sY:
             realY = realY + dy / abs(dy) * sY
         else:
@@ -66,6 +43,42 @@ class RedGhost(GhostInterface):
 
         Object.realRedGhostX = realX
         Object.realRedGhostY = realY
+
+    # # Hàm điều chỉnh hướng di chuyển để tránh ma, nhưng không thay đổi quá nhiều
+    # def avoid_ghost_collision(self, realX, realY, targetX, targetY):
+    #     # Tính toán lại hướng di chuyển sao cho tránh được các ma khác mà vẫn giữ hướng về mục tiêu
+    #     # Phương án này sẽ thay đổi hướng từ từ và không làm cho ma đỏ đi qua lại liên tục
+    #     best_direction = None
+    #     min_distance_to_target = float('inf')
+
+    #     directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]  # hướng: phải, trái, xuống, lên
+    #     for dx, dy in directions:
+    #         newX, newY = realX + dx, realY + dy
+    #         # Kiểm tra xem vị trí mới có hợp lệ và không chặn hay không
+    #         if self.isValidPos(newX, newY) and not self.is_near_other_ghost(newX, newY):
+    #             # Tính toán khoảng cách đến mục tiêu
+    #             distance_to_target = abs(targetX - newX) + abs(targetY - newY)
+    #             if distance_to_target < min_distance_to_target:
+    #                 min_distance_to_target = distance_to_target
+    #                 best_direction = (dx, dy)
+
+    #     if best_direction:
+    #         return best_direction
+    #     else:
+    #         # Nếu không tìm được hướng tối ưu, tránh va chạm tạm thời
+    #         return -dx, -dy
+
+    # # Hàm kiểm tra xem vị trí có gần các ma khác không
+    # def is_near_other_ghost(self, x, y):
+    #     other_ghosts = [
+    #         (Object.pinkGhostX, Object.pinkGhostY),
+    #         (Object.blueGhostX, Object.blueGhostY),
+    #         (Object.orangeGhostX, Object.orangeGhostY)
+    #     ]
+    #     for gx, gy in other_ghosts:
+    #         if abs(x - gx) + abs(y - gy) <= 2:  # Cách các ma khác quá gần
+    #             return True
+    #     return False
     
     #Kiểm tra vị trí có bị chặn không
     def is_position_clear(self, x, y):
@@ -76,7 +89,15 @@ class RedGhost(GhostInterface):
     #Nếu vị trí nằm trong ma trận và không bị chặn thì trả về True
     #Ngược lại trả về False
     def isValidPos(self, x, y):
-        return 0 <= x < Board.ROWS and 0 <= y < Board.COLS and self.is_position_clear(x, y) 
+        return 0 <= x < Board.ROWS and 0 <= y < Board.COLS and self.is_position_clear(x, y)
+    
+    #Cập nhật tọa độ
+    #Nếu delta lớn hơn stepSize thì cập nhật tọa độ
+    #Ngược lại giữ nguyên tọa độ mục tiêu
+    def update_coordinate(self, realCoord, delta, stepSize, targetCoord):
+        if abs(delta) >= stepSize:
+            return realCoord + (delta / abs(delta)) * stepSize
+        return targetCoord    
     
     def heuristic(self, ghostX, ghostY):
     # Tính toán Manhattan Distance đến Pacman
